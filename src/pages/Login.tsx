@@ -1,17 +1,37 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../api/axios";
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const navigate = useNavigate()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Placeholder login logic - just navigate to dashboard
-    navigate('/dashboard')
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
+    try {
+      const response = await api.post("/auth/login", {
+        email,
+        password,
+      });
+
+      const token = response.data.token;
+      const user = response.data.userDto;
+
+      // Store both
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      navigate("/dashboard");
+
+    } catch (error: any) {
+      console.error(error);
+      alert("Invalid email or password");
+    }
+  };
+
+ 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8">
@@ -71,3 +91,4 @@ export default function Login() {
     </div>
   )
 }
+

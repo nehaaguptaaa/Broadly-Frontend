@@ -9,9 +9,9 @@ export default function Sidebar() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('userId')
-    navigate('/login')
-  }
+  localStorage.clear();
+  window.location.href = "/login";
+};
 
   return (
     <div className="fixed left-0 top-0 h-full w-64 bg-white shadow-lg flex flex-col z-10">

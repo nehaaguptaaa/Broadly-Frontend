@@ -1,20 +1,17 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import Login from './pages/Login'
-import Signup from './pages/Signup'
-import Dashboard from './pages/Dashboard'
-import UploadPost from './pages/UploadPost'
-import Profile from './pages/Profile'
-import Sidebar from './components/Sidebar'
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Dashboard from "./pages/Dashboard";
+import UploadPost from "./pages/UploadPost";
+import Profile from "./pages/Profile";
+import Sidebar from "./components/Sidebar";
 
-// auth check
-const isAuthenticated = () => {
-  return !!localStorage.getItem('userId')
-}
-
-// protected layout
+// Protected layout
 const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
-  if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
   }
 
   return (
@@ -22,26 +19,36 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
       <Sidebar />
       {children}
     </>
-  )
-}
+  );
+};
 
 export default function App() {
+  const token = localStorage.getItem("token");
+
   return (
     <Routes>
-
       {/* Default route */}
       <Route
         path="/"
         element={
-          isAuthenticated()
-            ? <Navigate to="/dashboard" />
-            : <Navigate to="/login" />
+          token ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
         }
       />
 
       {/* Auth routes */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
+      <Route
+        path="/login"
+        element={
+          token ? <Navigate to="/dashboard" replace /> : <Login />
+        }
+      />
+
+      <Route
+        path="/signup"
+        element={
+          token ? <Navigate to="/dashboard" replace /> : <Signup />
+        }
+      />
 
       {/* Protected routes */}
       <Route
@@ -72,8 +79,7 @@ export default function App() {
       />
 
       {/* Catch-all */}
-      <Route path="*" element={<Navigate to="/" />} />
-
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  )
+  );
 }
